@@ -19,6 +19,7 @@
 // @grant          GM_openInTab
 // @grant          GM_setClipboard
 // @grant          GM_registerMenuCommand
+// @grant          GM_info
 // @grant          unsafeWindow
 // @homepageURL    https://greasyfork.org/scripts/292/
 // @require        http://cdn.staticfile.org/jquery/2.1.1/jquery.min.js
@@ -31,6 +32,7 @@
 // @include        http://readbook.qidian.com/bookreader/*,*.html
 // @include        http://read.qidian.com/BookReaderOld/*,*.aspx
 // @include        http://read.qidian.com/BookReader/*,*.aspx
+// @exclude        http://read.qidian.com/BookReader/vol,*,*.aspx
 // @include        http://wwwploy.qidian.com/BookReader/*,*.aspx
 // @include        http://free.qidian.com/Free/ReadChapter.aspx?*
 // @include        http://www.qdmm.com/BookReader/*,*.aspx
@@ -55,9 +57,12 @@
 
 // @include        http://tieba.baidu.com/p/*
 // @include        http://booklink.me/*
+// @include        https://booklink.me/*
 
 // booklink.me
-// @include        http://www.shumilou.com/*/*.html
+// @include        http://www.shumilou.co/*/*.html
+// @include        http://www.shumilou.us/*/*.html
+// @include        http://www.shumilou.net/*/*/*.html
 // @include        http://www.wcxiaoshuo.com/wcxs-*-*/
 // @include        http://www.xiaoshuoz.com/wcxs-*-*/
 // @include        http://www.quledu.com/wcxs-*-*/
@@ -106,6 +111,7 @@
 // @include        http://www.xs84.com/*_*/*
 // @include        http://www.geiliwx.com/GeiLi/*/*/*.shtml*
 // @include        http://www.123yq.com/read/*/*/*.shtml
+// @include        http://www.123yq.org/read/*/*/*.shtml
 // @include        http://www.dhzw.com/book/*/*/*.html
 // @include        http://www.du00.cc/read/*/*/*.html
 // @include        http://www.aszw.com/book/*/*/*.html
@@ -226,7 +232,7 @@
 // @include        http://www.luoqiu.net/html/*/*/*.html
 // @include        http://www.luoqiu.com/html/*/*/*.html
 // @include        http://www.epzw.com/files/article/html/*/*/*.html
-// @include        http://www.dashubao.com/book/*/*/*.html
+// @include        http://www.dashubao.co/book/*/*/*.html
 // @include        http://b.faloo.com/p/*/*.html
 // @include        http://www.baikv.com/*/*.html
 // @include        http://www.66721.com/*/*/*.html
@@ -260,6 +266,7 @@
 // @include        http://book.58xs.com/html/*/*/*.html
 // @include        http://book.mihua.net/*/*/*/*.html
 // @include        http://www.hjwzw.com/Book/Read/*,*
+// @include        http://www.hjwzw.com/Book/Read/*_*
 // @include        http://www.365essay.com/*/*.htm
 // @include        http://www.gengxin8.com/read/*/*.html
 // @include        http://www.365xs.org/books/*/*/*.html
@@ -279,6 +286,9 @@
 // @include        http://down1.qidian.com/bookall/*.htm*
 // @include        http://www.77nt.com/*/*.html
 // @include        http://www.quanbenba.com/yuedu/*/*/*.html
+// @include        http://*.sto.cc/*-*/
+// @include        http://www.151xs.com/wuxiazuoxiong/*/chapter/*/
+// @include        http://www.qududu.net/book/*/*/*.html
 
 // @exclude        */List.htm
 // @exclude        */List.html

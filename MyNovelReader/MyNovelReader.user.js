@@ -3,7 +3,7 @@
 // @name           My Novel Reader
 // @name:zh-CN     小说阅读脚本
 // @name:zh-TW     小說閱讀腳本
-// @version        5.2.3
+// @version        5.3.1
 // @namespace      https://github.com/ywzhaiqi
 // @author         ywzhaiqi
 // @contributor    Roger Au, shyangs, JixunMoe、akiba9527 及其他网友
@@ -19,6 +19,7 @@
 // @grant          GM_openInTab
 // @grant          GM_setClipboard
 // @grant          GM_registerMenuCommand
+// @grant          GM_info
 // @grant          unsafeWindow
 // @homepageURL    https://greasyfork.org/scripts/292/
 // @require        http://cdn.staticfile.org/jquery/2.1.1/jquery.min.js
@@ -31,6 +32,7 @@
 // @include        http://readbook.qidian.com/bookreader/*,*.html
 // @include        http://read.qidian.com/BookReaderOld/*,*.aspx
 // @include        http://read.qidian.com/BookReader/*,*.aspx
+// @exclude        http://read.qidian.com/BookReader/vol,*,*.aspx
 // @include        http://wwwploy.qidian.com/BookReader/*,*.aspx
 // @include        http://free.qidian.com/Free/ReadChapter.aspx?*
 // @include        http://www.qdmm.com/BookReader/*,*.aspx
@@ -55,9 +57,12 @@
 
 // @include        http://tieba.baidu.com/p/*
 // @include        http://booklink.me/*
+// @include        https://booklink.me/*
 
 // booklink.me
-// @include        http://www.shumilou.com/*/*.html
+// @include        http://www.shumilou.co/*/*.html
+// @include        http://www.shumilou.us/*/*.html
+// @include        http://www.shumilou.net/*/*/*.html
 // @include        http://www.wcxiaoshuo.com/wcxs-*-*/
 // @include        http://www.xiaoshuoz.com/wcxs-*-*/
 // @include        http://www.quledu.com/wcxs-*-*/
@@ -106,6 +111,7 @@
 // @include        http://www.xs84.com/*_*/*
 // @include        http://www.geiliwx.com/GeiLi/*/*/*.shtml*
 // @include        http://www.123yq.com/read/*/*/*.shtml
+// @include        http://www.123yq.org/read/*/*/*.shtml
 // @include        http://www.dhzw.com/book/*/*/*.html
 // @include        http://www.du00.cc/read/*/*/*.html
 // @include        http://www.aszw.com/book/*/*/*.html
@@ -226,7 +232,7 @@
 // @include        http://www.luoqiu.net/html/*/*/*.html
 // @include        http://www.luoqiu.com/html/*/*/*.html
 // @include        http://www.epzw.com/files/article/html/*/*/*.html
-// @include        http://www.dashubao.com/book/*/*/*.html
+// @include        http://www.dashubao.co/book/*/*/*.html
 // @include        http://b.faloo.com/p/*/*.html
 // @include        http://www.baikv.com/*/*.html
 // @include        http://www.66721.com/*/*/*.html
@@ -260,6 +266,7 @@
 // @include        http://book.58xs.com/html/*/*/*.html
 // @include        http://book.mihua.net/*/*/*/*.html
 // @include        http://www.hjwzw.com/Book/Read/*,*
+// @include        http://www.hjwzw.com/Book/Read/*_*
 // @include        http://www.365essay.com/*/*.htm
 // @include        http://www.gengxin8.com/read/*/*.html
 // @include        http://www.365xs.org/books/*/*/*.html
@@ -279,6 +286,9 @@
 // @include        http://down1.qidian.com/bookall/*.htm*
 // @include        http://www.77nt.com/*/*.html
 // @include        http://www.quanbenba.com/yuedu/*/*/*.html
+// @include        http://*.sto.cc/*-*/
+// @include        http://www.151xs.com/wuxiazuoxiong/*/chapter/*/
+// @include        http://www.qududu.net/book/*/*/*.html
 
 // @exclude        */List.htm
 // @exclude        */List.html
@@ -400,7 +410,7 @@ Rule.specialSite = [
         prevSelector: '#pagePrevRightBtn',
         nextSelector: '#pageNextRightBtn',
         indexSelector: function() {
-            return location.href.replace(/,\w+\.aspx$/, '.aspx').replace('BookReaderNew', 'BookReader');
+            return location.href.replace(/,.*?\.aspx$/, '.aspx').replace('BookReaderNew', 'BookReader');
         },
 
         mutationSelector: "#chaptercontainer",  // 内容生成监视器
@@ -471,7 +481,12 @@ Rule.specialSite = [
         nextSelector: '#rightFloatBar_nextChapterBtn',
         prevSelector: '#rightFloatBar_preChapterBtn',
         indexSelector: function() {
-            return 'http://chuangshi.qq.com/bk/ds/' + unsafeWindow.bid + '-l.html';
+            var m = location.href.match(/\/bk\/\w+\/(.*?)-r-\d+.html/);
+            if (m) {
+                return 'http://chuangshi.qq.com/bk/ls/' + m[1] + '-l.html';
+            } else {
+                return 'http://chuangshi.qq.com/bk/ls/' + unsafeWindow.bid + '-l.html';
+            }
         },
 
         contentSelector: ".bookreadercontent",
@@ -663,7 +678,6 @@ Rule.specialSite = [
             "—无—错—小说",
             "\\+无\\+错\\+",
             "&amp;无&amp;错&amp;小说",
-            "＋无＋错＋小说＋3Ｗ.＋＋com",
             "无错小说 www.quled[Ｕu].com",
         ],
         contentPatch: function(fakeStub){
@@ -693,7 +707,7 @@ Rule.specialSite = [
         ]
     },
     {siteName: "书迷楼",
-        url: /^http:\/\/www\.shumilou\.com\/.*html$/,
+        url: /^http:\/\/www\.shumilou\.(?:co|us)\/.*html$/,
         titleReg: /(.*) (.*?) 书迷楼/,
         titlePos: 1,
         contentSelector: "#content",
@@ -711,6 +725,7 @@ Rule.specialSite = [
             '《乐》《读》小说.乐读.Com',
             '纯文字在线阅读本站域名手机同步阅读请访问',
             '-优－优－小－说－更－新－最－快-www.uuxs.cc-',
+            '\\(本章免费\\)',
         ],
         fixImage: true,
         contentPatch: function(fakeStub){
@@ -1172,10 +1187,10 @@ Rule.specialSite = [
         }
     },
     {siteName: "123言情",
-        url: 'http://www\\.123yq\\.com/read/\\d+/\\d+/\\d+\\.shtml',
+        url: 'http://www\\.123yq\\.(com|org)/read/\\d+/\\d+/\\d+\\.shtml',
         bookTitleSelector: '.con_top > a:last',
         contentSelector: "#TXT",
-        contentRemove: '.bottem, .red',
+        contentRemove: '.bottem, .red, .contads, a',
     },
     {siteName: "热门小说网",
         url: 'http://www.remenxs.com/du_\\d+/\\d+/',
@@ -1208,6 +1223,7 @@ Rule.specialSite = [
             "BAIDU_CLB_fillSlot\\(.*",
             "--小-说-www-23wx-com",
             "&nbsp;&nbsp;，请",
+            '\\.www\\.GEILIWX开心阅读每一天',
         ],
         contentPatch: function(d) {
             if (!d.find('#content').length) {
@@ -1553,12 +1569,14 @@ Rule.specialSite = [
         titleSelector: '.ctitle',
         bookTitleSelector: '#hlBookName',
         contentSelector: '#content',
-        contentRemove: '.bottomlink, a',
+        contentRemove: '.bottomlink, a, .cad, .footer, .adbottom',
         contentReplace: [
             '[☆★◆〓『【◎◇].*?(?:yunlaige|云 来 阁|ｙｕｎｌａｉｇｅ).*?[☆◆★〓』】◎◇]',
             '《更新最快小说网站：雲来阁http://WWW.YunLaiGe.COM》',
             '◢百度搜索雲来阁，最新最快的小说更新◣',
             '【當你閱讀到此章節，請您移步到雲來閣閱讀最新章節，或者，雲來閣】',
+            '【看恐怖小说、玄幻小说、请大家登陆黑岩居http://www.heiyanju.com万本小说免费看】',
+            '如您已阅读到此章节，请移步到.*',
             '===百!?度搜索.*?新章节===',
             '【最新更新】',
             '值得您收藏。。',
@@ -1572,7 +1590,11 @@ Rule.specialSite = [
             'w∨23w',
             'ｗwｗ23ｗｘｃｏｍ',
             '￥℉頂￥℉点￥℉小￥℉',
-            '￡∝頂￡∝点￡∝小￡∝'
+            '￡∝頂￡∝点￡∝小￡∝',
+            '篮。色。书。巴,',
+            '<!--\\?[\\(<]',   // 提取内容后出现的注释标志，造成后面的内容没了
+            '看书&nbsp;&nbsp; 要?',
+            '喜欢网就上。',
         ]
     },
     {siteName: "乐文小说网",
@@ -1588,6 +1610,7 @@ Rule.specialSite = [
             /乐文小说网值得.+/g,
             '\\(\\)',
             'www.LＷＸＳ５２０.com',
+            'www.lwxs520.com 首发哦亲',
         ]
     },
     {siteName: '我爱小说',
@@ -1627,11 +1650,14 @@ Rule.specialSite = [
         contentHandle: false,
     },
     {siteName: "黄金屋中文网",
-        url: /www\.hjwzw\.com\/Book\/Read\/\d+,\d+$/,
+        url: /www\.hjwzw\.com\/Book\/Read\/\d+[,_]\d+$/,
         titleSelector: "h1",
         indexSelector: "td a[href='./']",
         contentSelector: "#AllySite+div",
-        contentRemove: "b, b+p"
+        contentRemove: "b, b+p",
+        contentReplace: [
+            "请记住本站域名:"
+        ]
     },
     {siteName: "梦远书城",
         url: /www\.my285\.com(?:\/\w+){3,5}\/\d+\.htm$/,
@@ -1662,7 +1688,7 @@ Rule.specialSite = [
         ]
     },
     {siteName: "大书包小说网",
-        url: "http://www\\.dashubao\\.com/book/\\d+/\\d+/\\d+\\.html",
+        url: "http://www\\.dashubao\\.com?/book/\\d+/\\d+/\\d+\\.html",
         bookTitleSelector: ".read_t > .lf > a:nth-child(3)",
         contentSelector: ".yd_text2",
         contentReplace: [
@@ -1715,9 +1741,25 @@ Rule.specialSite = [
             '≧哈，m\\.',
             '\\[\\s*超多好看\\]',
             '热门【首发】',
-            "===百度搜索.*?==="
+            '===百度搜索.*?===',
+            '===\\*\\*小说巴士.*?===',
         ]
     },
+    {siteName: "思兔阅读",
+        url: "http://\\w+\\.sto\\.cc/\\d+-\\d+/",
+        titleReg: "(.*?)_(.*?)_全文在線閱讀_思兔",
+        titlePos: 0,
+        //bookTitleSelector: "h1",
+        prevSelector: "a:contains('上壹頁')",
+        nextSelector: "a:contains('下壹頁')",
+        contentSelector: "div#BookContent",
+        contentRemove: 'span',
+    },
+    {siteName: "去读读",
+        url: "http://www\\.qududu\\.net/book/\\d+/\\d+/\\d+\\.html",
+        contentSelector: "#kui-page-read-txt",
+    },
+
 
     // ===== 特殊的获取下一页链接
     {siteName: "看书啦",
@@ -1829,7 +1871,7 @@ Rule.replace = {
     ".{2,4}中文网欢迎广大书友": "",
     "访问下载txt小说|◎雲來閣免费万本m.yunlaige.com◎":"",
     "〖∷更新快∷无弹窗∷纯文字∷.*?〗": "",
-    "本文由　。。　首发":"",
+    '超快稳定更新小说[,，]':'', "本文由　。。　首发":"",
     '”小说“小说章节更新最快': '',
     '如果觉得好看，请把本站网址推荐给您的朋友吧！': '',
     '本站手机网址：&nbsp;&nbsp;请互相通知向您QQ群【微博/微信】论坛贴吧推荐宣传介绍!': '',
@@ -1885,7 +1927,7 @@ Rule.replace = {
     "上jiang":"上将", "she(门|术|手|程|击)":"射$1", "sudu":"速度", "shuijue":"睡觉", "shide":"是的", "sh[iì]ji[eè]":"世界", "sh[ií]ji[aā]n":"时间", "sh[ií]h[oò]u": "时候", "sh[ií]me":"什么", "si人":"私人", "shi女":"侍女", "shi身": "失身", "sh[ūu]j[ìi]":"书记", "shu女": "熟女", "shu[　\\s]?xiong":"酥胸", "(?:上|shang)chuang": "上床", "呻y[íi]n": "呻吟", "sh[ēe]ngzh[íi]": "生殖", "深gu": "深谷", "双xiu": "双修", "生r[ìi]": "生日", "si盐":"私盐", "shi卫":"侍卫", "si下":"私下", "sao扰":"骚扰", "ｓｈｕａｎｇ　ｆｅｎｇ":"双峰",
     "t[uū]r[áa]n":"突然", "tiaojiao": "调教", "偷qing":"偷情", "推dao": "推倒", "脱guang": "脱光", "t[èe]bi[ée]":"特别", "t[ōo]nggu[òo]":"通过", "同ju":"同居", "tian来tian去":"舔来舔去",
     "w[ēe]ixi[ée]":"威胁", "wèizh[ìi]":"位置", "wei员":"委员", "w[èe]nti":"问题", "wèi\\s*dào\\s*":"味道", "wú\\s*nài":"无奈", "weilai":"未来",
-    "xiu长": "修长", "亵du": "亵渎", "xing福": "幸福", "小bo":"小波", "小niū":"小妞", "xiong([^a-z])":"胸$1", "小tui":"小腿", "xiang港":"香港", "xiàohuà":"笑话", "xiàn\\'zhì":"限制", "xiōng\\s*dì":"兄弟",
+    "xiu长": "修长", "亵du": "亵渎", "xing福": "幸福", "小bo":"小波", "小niū":"小妞", "xiong([^a-z])":"胸$1", "小tui":"小腿", "xiang港":"香港", "xiàohuà":"笑话", "xiàn\\'zhì":"限制", "xiōng\\s*dì":"兄弟", "选zé":"选择",
     "yì\\s*wài\\s*":"意外", "yin(冷|暗|谋|险|沉|沟|癸派|后)":"阴$1", "y[iī]y[àa]ng":"一样", "y[īi]di[ǎa]n":"一点", "yī\\s*zhèn":"一阵", "y[ǐi]j[īi]ng":"已经", "疑huo":"疑惑", "yí\\s*huò":"疑惑", "影mi":"影迷", "yin荡":"淫荡", "yin贼":"淫贼", "阳w[ěe]i": "阳痿", "yao头": "摇头", "yaotou": "摇头", "摇tou": "摇头", "yezhan": "野战", "you饵": "诱饵", "(?:you|诱)(?:惑|huo)": "诱惑", "you导": "诱导", "引you": "引诱", "you人": "诱人", "youshi":"有事", "you\\s*xiu":"优秀", "御yòng":"御用", "旖ni":"旖旎", "yu念":"欲念", "you敌深入":"诱敌深入", "影she":"影射", "牙qian":"牙签", "一yè情":"一夜情",
     "z[iì]j[iǐ]": "自己","z[ìi](?:\\s|<br/?>|&nbsp;)*y[oó]u": "自由","zh[iī]d?[àa]u?o":"知道", "zixin":"自信", "zhì'fú":"制服", "zha药": "炸药", "zhan有": "占有", "zhè\\s*gè":"这个", "政f[ǔu]|zheng府": "政府", "zh[èe]ng\\s{0,2}f[uǔ]": "政府", "zong理":"总理", "zh[ōo]ngy[āa]ng": "中央", "中yang":"中央", "zu[oǒ]\\s*y[oò]u":"左右", "zhǔ\\s*dòng":"主动", "zh[oō]uw[ée]i":"周围", "中nan海":"中南海", "中j委":"中纪委", "中zu部":"中组部", "政zhi局":"政治局", "(昨|一|时|余)(?:<br/?>|&nbsp;|\\s)*ì":"$1日", "照she":"照射", "zhǔn\\s*bèi\\s*":"准备", "zhu义":"主义",
 
@@ -1895,25 +1937,25 @@ Rule.replace = {
 // 单字替换，可能会误替换，所以需要特殊处理
 (function(){
     var oneWordReplace = {
-        "b[āà]ng":"棒","bào":"爆","bà":"吧","bī":"逼","bō":"波",
+        "b[āà]ng":"棒","bào":"爆","bà":"吧","bī":"逼","bō":"波", "biàn":"便",
         "cāo": "操", "cǎo": "草", "cào": "操", "chāng": "娼", "chang": "娼", "cháo": "潮", "chā": "插", "chéng": "成", "chōu": "抽", "chuáng": "床", "chún": "唇", "chūn": "春", "cuō": "搓", "cū": "粗",
         "dǎng": "党", "dàng": "荡", "dāo": "刀", "dòng": "洞", "diao": "屌", "diǎn": "点",
         "fǎ": "法", "féi": "肥", "fù": "妇",
         "guān": "官",
-        "hán": "含", "hóu": "喉", "hòu": "厚", "h(u)?ā": "花", "huá": "华", "huò": "惑", "hùn": "混", "hún": "魂",
+        "hán": "含", "hóu": "喉", "hòu":"后", "h(u)?ā": "花", "huá": "华", "huì":"会", "huò": "惑", "hùn": "混", "hún": "魂",
         "jiǔ": "九", "jīng": "精", "jìn": "禁", "jǐng": "警", "jiāng": "江", "jiān": "奸", "jiāo": "交", "jūn": "军", "jū": "拘", "jú": "局", "jī": "激", "激ān":"奸",
         "kù": "裤", "kàn": "看",
-        "[1l]àng": "浪", "liáo": "撩", "liú":"流", "lì":"莉", "liè":"烈", "[1l]uàn":"乱", "lún":"伦", "luǒ":"裸", "lòu":"露", "[l1]ù":"露", "lǜ":"绿",
-        "mǎi": "买", "mài": "卖", "máo": "毛", "mā": "妈", "méng": "蒙", "mén": "门", "miè": "灭", "mí": "迷", "mì": "蜜", "mō": "摸",
+        "[1l]àng": "浪", "liáo": "撩", "liú":"流", "lì":"莉", "liè":"烈", "[1l]uàn":"乱", "lún":"伦", "luǒ":"裸", "lòu":"露", "[l1]ù":"露", "lǜ":"绿", "liàn":"练",
+        "mǎi": "买", "mài": "卖", "máo": "毛", "mā": "妈", "méng": "蒙", "mén": "门", "miè": "灭", "mí": "迷", "mì": "蜜", "mō": "摸", "miàn":"面",
         "nǎi": "奶", "nèn": "嫩", "niào": "尿", "niē": "捏", "nòng": "弄", "nǚ": "女",
-        "pào": "炮", "piàn": "片",
-        "qi[āa]ng": "枪", "qíng": "情", "qīn": "亲", "qiú": "求", "quán": "全",
+        "pào": "炮", "piàn": "片", "pò":"破",
+        "qi[āa]ng": "枪", "qíng": "情", "qīn": "亲", "qiú": "求", "quán": "全", "qù":"去",
         "rén":"人", "rì": "日", "rǔ": "乳",
-        "sāo":"骚", "sǎo": "骚", "sè": "色",  "shā": "杀", "shēn":"呻", "shén":"神", "shè": "射", "shǐ": "屎", "shì": "侍", "sǐ": "死", "sī": "私", "shǔn": "吮", "sǔn": "吮", "sū": "酥",
-        "tān":"贪", "tiǎn": "舔", "tǐng":"挺", "tǐ": "体", "tǒng": "捅", "tōu": "偷", "tou": "偷", "tuǐ": "腿", "tūn": "吞", "tún": "臀", "tiáo":"调", "tài":"态",
+        "sǎ":"洒", "sāo":"骚", "sǎo": "骚", "sè": "色",  "shā": "杀", "shēn":"呻", "shén":"神", "shè": "射", "shǐ": "屎", "shì": "侍", "sǐ": "死", "sī": "私", "shǔn": "吮", "sǔn": "吮", "sū": "酥", "shào":"绍",
+        "tān":"贪", "tiǎn": "舔", "tǐng":"挺", "tǐ": "体", "tǒng": "捅", "tōu": "偷", "tou": "偷", "tuǐ": "腿", "tūn": "吞", "tún": "臀", "tiáo":"调", "tài":"态", "tào":"套",
         "wēn": "温", "wěn": "吻",
-        "xiǎo":"小", "xìng": "性", "xiōng": "胸", "xī": "吸", "xí": "习", "xué": "穴", "xuè": "穴", "xùe": "穴",  "xuan":"宣",
-        "yāng":"央", "yàn":"艳", "yīn":"阴", "yào": "药", "yé": "爷", "yòu": "诱", "zàng": "脏", "yù": "欲", "yín": "淫",
+        "xiǎo":"小", "xiào":"笑", "xìng": "性", "xiōng": "胸", "xī": "吸", "xí": "习", "xì":"系", "xìn":"信", "xué": "穴", "xuè": "穴", "xùe": "穴",  "xuan":"宣", "xiàng":"象",
+        "yāng":"央", "yàn":"艳", "yīn":"阴", "yào": "药", "yé": "爷", "yòu": "诱", "zàng": "脏", "yù": "欲", "yín": "淫", "yì":"意", "yà":"讶",
         "zhēn":"针", "zēn":"针", "zhà":"炸", "zhèng":"政", "zǒu": "走", "zuì":"罪", "zuò":"做", "zhōng":"中",
 
         "ri":"日", "se":"色", "yu":"欲", "xing":"性",
@@ -1933,7 +1975,7 @@ Rule.replace = {
     };
 
     _.each(oneWordReplace, function(value, key) {
-        Rule.replace['([^a-z\\s])' + key + '(?![a-z\\s])'] = '$1' + value;
+        Rule.replace['([^a-z\\s])' + key + '(?![a-z])'] = '$1' + value;
     });
 
     _.extend(Rule.replace, replaceOthers);
@@ -1970,10 +2012,13 @@ Rule.replaceAll = [
     'txt小说下载',
     '（\\s*君子聚义堂）',
     'readx;',
+    '追书必备',
+    '樂文小说',
 
     // 包含 \P 的替换
     '\\P{1,2}[顶頂].{1,3}[点小].*?o?[mw，]',
     '\\P.?长.{1,2}风.{1,2}文.{1,2}学.*?[tx]',
+    '\\P无.错.*?[cＣ][oＯ][mＭ]',
     '[;\\(]顶.{0,2}点.小说',
     '2长2风2文2学，w￠＄',
     '》长>风》',
@@ -2005,7 +2050,7 @@ Rule.replaceAll = [
     '[《〈》>\\+｜～［\\]]无\\1错\\1', '》无>错》',
 
     '女凤免费小说抢先看', '女凤小说网全文字 无广告',
-    '乐文小说', '《乐〈文《小说', '乐文移动网', '頂点小说', '頂點小說',
+    '乐文小说网?', '《乐〈文《小说', '乐文移动网', '頂点小说', '頂點小說',
     '追小说哪里快去眼快',
     '\\[书库\\].\\[774\\]\\[buy\\].kuai',
 
@@ -3744,6 +3789,11 @@ Parser.prototype = {
             }
         }
 
+        // 跟 include 比较
+        var includeUrl = this.info.includeUrl || this.getIncludeUrl();
+        if (!toRE(includeUrl).test(url))
+            return false;
+
         switch(true){
             case url === '':
             case Rule.nextUrlIgnore.some(function(re) { return toRE(re).test(url) }):
@@ -3755,6 +3805,23 @@ Parser.prototype = {
             default:
                 return true;
         }
+    },
+    getIncludeUrl: function() {
+        var includeUrl = this.info.url;
+
+        if (!includeUrl && typeof GM_info !== 'undefined') {
+            var locationHref = location.href;
+            GM_info.script.includes.some(function(includeStr) {
+                var iUrl = wildcardToRegExpStr(includeStr);
+                if (toRE(iUrl).test(locationHref)) {
+                    includeUrl = iUrl;
+                    return true;
+                }
+            });
+        }
+
+        this.info.includeUrl = includeUrl;
+        return includeUrl;
     },
     checkLinks: function(links){
         var self = this;
@@ -4105,6 +4172,7 @@ var App = {
     clean: function() {
         $('body > *:not("#container, .readerbtn, #reader_preferences, #uil_blocker,iframe[name=\'mynovelreader-iframe\']")').remove();
         $('link[rel="stylesheet"]').remove();
+        $('body').removeAttr('style');
 
         if (location.host.indexOf('qidian') > 0) {
             unsafeWindow.jQuery(document).off("selectstart").off("contextmenu");
